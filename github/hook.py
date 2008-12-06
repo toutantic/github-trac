@@ -97,15 +97,21 @@ class CommitHook:
         self.env = env
 
     def process(self, commit):
+        self.env.log.debug("Processing Commit")
+        
         msg = commit['message']
+        self.env.log.debug("msg: %s" % msg)
         author = commit['author']['name']
+        self.env.log.debug("author: %s" % author)
         timestamp = datetime.now(utc)
         
         cmd_groups = command_re.findall(msg)
+        self.env.log.debug("CMD Groups: %s" % cmd_groups)
 
         tickets = {}
         for cmd, tkts in cmd_groups:
             funcname = self.__class__._supported_cmds.get(cmd.lower(), '')
+            self.env.log.debug("Function Handler: %s" % funcname)
             if funcname:
                 for tkt_id in ticket_re.findall(tkts):
                     func = getattr(self, funcname)
@@ -139,7 +145,11 @@ class CommitHook:
             
 
     def _cmdClose(self, ticket):
-        ticket['status'] = self.closestatus
+        status = self.closestatus
+        if not status:
+            status = 'closed'
+
+        ticket['status'] = status
         ticket['resolution'] = 'fixed'
 
     def _cmdRefs(self, ticket):

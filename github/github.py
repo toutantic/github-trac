@@ -32,8 +32,12 @@ class GithubPlugin(Component):
     def process_request(self, req):
         self.env.log.debug("Process Request")
         self.env.log.debug("Request Data: %s" % req.read())
+
+        #Not sure why this part is breaking? Noting is coming in from the request..
+        #May be related to the Hack??
+            
         #try:
-        data = simplejson.loads(req.read())
+        #data = simplejson.loads(req.read())
 
         #for sha1, commit in data['commits'].items():
         #    self.env.log.debug("Commit %s:" % commit)

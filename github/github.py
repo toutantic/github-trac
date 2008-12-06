@@ -31,18 +31,14 @@ class GithubPlugin(Component):
     
     def process_request(self, req):
         self.env.log.debug("Process Request")
-        self.env.log.debug("Request Data TEXT: %s" % req.args.get('payload'))
         data = req.args.get('payload')
             
         #try:
         jsondata = simplejson.loads(data)
 
-        for sha1, commit in jsondata['commits']:
-            self.env.log.debug("Commit %s:" % commit)
-            #self.hook.process(commit)
-
-
-
+        for i in jsondata['commits']:
+            self.env.log.debug("Commit %s:" % i)
+            self.hook.process(i)
 
 
         #for sha1, commit in jsondata['commits']:

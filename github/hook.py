@@ -67,6 +67,7 @@ from trac.ticket.web_ui import TicketModule
 from trac.util.text import to_unicode
 from trac.util.datefmt import utc
 from trac.versioncontrol.api import NoSuchChangeset
+from trac.config import Option, IntOption, ListOption, BoolOption
 
 ticket_prefix = '(?:#|(?:ticket|issue|bug)[: ]?)'
 ticket_reference = ticket_prefix + '[0-9]+'
@@ -89,6 +90,8 @@ class CommitHook:
                        'references': '_cmdRefs',
                        'refs':       '_cmdRefs',
                        'see':        '_cmdRefs'}
+
+    closestatus = Option('github', 'closestatus', 'closed', doc="""This is the status used to close a ticket. It defaults to closed.""")
 
     def __init__(self, env):
         self.env = env
@@ -136,7 +139,7 @@ class CommitHook:
             
 
     def _cmdClose(self, ticket):
-        ticket['status'] = 'closed'
+        ticket['status'] = self.closestatus
         ticket['resolution'] = 'fixed'
 
     def _cmdRefs(self, ticket):

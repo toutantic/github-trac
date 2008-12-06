@@ -5,10 +5,24 @@ from setuptools import find_packages, setup
 # use package name as entry_points
 
 setup(
-    name='GithubPlugin', version='0.1',
-    packages=find_packages(exclude=['*.tests*']),
-    entry_points = """
-        [trac.plugins]
-        github = github
-    """,
+    name='GithubPlugin',
+    version='0.2',
+    author='Paolo Capriotti',
+    author_email='p.capriotti@gmail.com',
+    description = "Creates an entry point for a GitHub post-commit hook.",
+    license = """Unknown Status""",
+    url = "http://github.com/pcapriotti/github-trac/tree/master",
+    packages = find_packages(exclude=['*.tests*']),
+	package_data={'github' : []},
+
+    install_requires = [
+        'simplejson>=2.0.5',
+    ],
+    entry_points = {
+        'trac.plugins': [
+            'github = github',
+
+        ]    
+    }
+
 )

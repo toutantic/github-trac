@@ -8,6 +8,7 @@ class GithubPlugin(Component):
     implements(IRequestHandler)
     
     key = Option('github', 'apitoken', '', doc="""Your GitHub API Token found here: https://github.com/account, """)
+    closestatus = Option('github', 'closestatus', '', doc="""This is the status used to close a ticket. It defaults to closed.""")
 
     def __init__(self):
         self.hook = CommitHook(self.env)
@@ -30,6 +31,12 @@ class GithubPlugin(Component):
         return serve
     
     def process_request(self, req):
+        status = self.closestatus
+        self.env.log.debug("Close Status #1: %s" % status)
+        if not status:
+            status = 'closed'
+
+        self.env.log.debug("Close Status #2: %s" % status)
         self.env.log.debug("Process Request")
         data = req.args.get('payload')
             
@@ -38,7 +45,7 @@ class GithubPlugin(Component):
 
         for i in jsondata['commits']:
             #self.env.log.debug("Commit %s:" % i)
-            self.hook.process(i)
+            self.hook.process(i, status)
 
 
         #for sha1, commit in jsondata['commits']:

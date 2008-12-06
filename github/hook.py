@@ -91,22 +91,19 @@ class CommitHook:
                        'refs':       '_cmdRefs',
                        'see':        '_cmdRefs'}
 
-    closestatus = Option('github', 'closestatus', 'closed', doc="""This is the status used to close a ticket. It defaults to closed.""")
 
     def __init__(self, env):
         self.env = env
 
-    def process(self, commit):
+    def process(self, commit, status):
+        self.closestatus = status
         self.env.log.debug("Processing Commit")
         
         msg = commit['message']
-        self.env.log.debug("msg: %s" % msg)
         author = commit['author']['name']
-        self.env.log.debug("author: %s" % author)
         timestamp = datetime.now(utc)
         
         cmd_groups = command_re.findall(msg)
-        self.env.log.debug("CMD Groups: %s" % cmd_groups)
 
         tickets = {}
         for cmd, tkts in cmd_groups:
@@ -145,11 +142,7 @@ class CommitHook:
             
 
     def _cmdClose(self, ticket):
-        status = self.closestatus
-        if not status:
-            status = 'closed'
-
-        ticket['status'] = status
+        ticket['status'] = self.closestatus
         ticket['resolution'] = 'fixed'
 
     def _cmdRefs(self, ticket):

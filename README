@@ -34,3 +34,21 @@ To install this Trac Plugin:
         This is for your security, only those that know the API Token will able to post to this url
 
     6. All done.
+
+
+======================================================================================================
+
+The commit hook is designed to close or mark tickets that are attached to a commit message.
+
+
+It searches commit messages for text in the form of:
+    command #1
+    command #1, #2
+    command #1 & #2 
+    command #1 and #2
+
+Instead of the short-hand syntax "#1", "ticket:1" can be used as well, e.g.:
+    command ticket:1
+    command ticket:1, ticket:2
+    command ticket:1 & ticket:2 
+    command ticket:1 and ticket:2

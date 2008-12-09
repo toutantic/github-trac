@@ -1,5 +1,7 @@
 This trac plugin is designed to accept a GitHub Post-Receive url.
 
+It also allows you to replace the builtin Trac browser with redirects to the GitHub source browser.
+
 More information about the Post-Receive Hook can be found here:
 http://github.com/guides/post-receive-hooks
 
@@ -23,6 +25,7 @@ To install this Trac Plugin:
         [github]
         apitoken = YOUR GITHUB API TOKEN
         closestatus = closed (This is optional, defaults to closed
+        browser = http://github.com/davglass/tree/master
         
     5. Go to the Admin page for your project on GitHub. Then select the services tab.
         Under the: Post-Receive URLs
@@ -52,3 +55,15 @@ Instead of the short-hand syntax "#1", "ticket:1" can be used as well, e.g.:
     command ticket:1, ticket:2
     command ticket:1 & ticket:2 
     command ticket:1 and ticket:2
+
+======================================================================================================
+
+The Code Browser
+
+The code browser portion of the plugin is designed to replace the code browser built into Trac with a
+redirect to the GitHub source browser.
+
+In order for this to work properly, you still need to have Trac set to show a git repository. Turing this off
+will not show source control links in other places (timeline).
+
+This plugin will attempt to intercept the /browser and /changeset url's and redirect you to the proper GitHub url.

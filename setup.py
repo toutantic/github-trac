@@ -6,12 +6,12 @@ from setuptools import find_packages, setup
 
 setup(
     name='GithubPlugin',
-    version='0.2',
-    author='Paolo Capriotti',
-    author_email='p.capriotti@gmail.com',
+    version='0.3',
+    author='Dav Glass',
+    author_email='davglass@gmail.com',
     description = "Creates an entry point for a GitHub post-commit hook.",
     license = """Unknown Status""",
-    url = "http://github.com/pcapriotti/github-trac/tree/master",
+    url = "http://github.com/davglass/github-trac/tree/master",
     packages = find_packages(exclude=['*.tests*']),
 	package_data={'github' : []},
 

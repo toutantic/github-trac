@@ -64,6 +64,9 @@ class GithubPlugin(Component):
         browser = self.browser.replace('/tree/master', '/commit/')
         
         url = req.path_info.replace('/changeset/', '')
+        if not url:
+            browser = self.browser
+            url = ''
 
         redirect = '%s%s' % (browser, url)
         self.env.log.debug("Redirect URL: %s" % redirect)

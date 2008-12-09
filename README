@@ -1,3 +1,10 @@
+======================================================================================================
+
+Please file bug reports here:
+http://davglass.lighthouseapp.com/projects/21212/home
+
+======================================================================================================
+
 This trac plugin is designed to accept a GitHub Post-Receive url.
 
 It also allows you to replace the builtin Trac browser with redirects to the GitHub source browser.

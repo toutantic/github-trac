@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='GithubPlugin',
-    version='0.3',
+    version='0.4',
     author='Dav Glass',
     author_email='davglass@gmail.com',
     description = "Creates an entry point for a GitHub post-commit hook.",

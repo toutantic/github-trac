@@ -99,22 +99,11 @@ class GithubPlugin(Component):
             status = 'closed'
 
         data = req.args.get('payload')
-            
-        #try:
-        jsondata = simplejson.loads(data)
+         
+        if data:
+            jsondata = simplejson.loads(data)
 
-        for i in jsondata['commits']:
-            #self.env.log.debug("Commit %s:" % i)
-            self.hook.process(i, status)
+            for i in jsondata['commits']:
+                self.hook.process(i, status)
 
 
-        #for sha1, commit in jsondata['commits']:
-        #req.send_response(200)
-        #req.send_header('Content-Type', 'text/plain')
-        #req.end_headers()
-        #req.write('Hello world!')
-        #except json.ReadException, e:
-        #    req.send_response(400)
-        #    req.send_header('Content-type', 'text/plain')
-        #    req.end_headers()
-        #    req.write(e.message)

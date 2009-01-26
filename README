@@ -74,6 +74,7 @@ redirect to the GitHub source browser.
 
 In order for this to work properly, you still need to have Trac set to show a git repository. Turning this off
 will not show source control links in other places (timeline). This git repository needs to be a synced clone of
-your GitHub repository.
+your GitHub repository. Trac requires the GitPlugin in order to show a Git Repository: http://trac-hacks.org/wiki/GitPlugin
+
 
 This plugin will attempt to intercept the /browser and /changeset url's and redirect you to the proper GitHub url.

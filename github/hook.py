@@ -43,7 +43,7 @@
 #   close, closed, closes, fix, fixed, fixes
 #     The specified issue numbers are closed with the contents of this
 #     commit message being added to it. 
-#   references, refs, addresses, re, see 
+#   references, refs, ref, addresses, re, see 
 #     The specified issue numbers are left in their current status, but 
 #     the contents of this commit message are added to their notes. 
 #
@@ -89,6 +89,7 @@ class CommitHook:
                        're':         '_cmdRefs',
                        'references': '_cmdRefs',
                        'refs':       '_cmdRefs',
+                       'ref':       '_cmdRefs',
                        'see':        '_cmdRefs'}
 
 

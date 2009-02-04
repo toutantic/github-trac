@@ -97,15 +97,16 @@ class CommitHook:
 
     def process(self, commit, status):
         self.closestatus = status
-        self.env.log.debug("Processing Commit")
         
         msg = commit['message']
+        self.env.log.debug("Processing Commit: %s", msg)
         note = "Changeset: %s" % commit['id']
         msg = "%s \n %s" % (msg, note)
         author = commit['author']['name']
         timestamp = datetime.now(utc)
         
         cmd_groups = command_re.findall(msg)
+        self.env.log.debug("Function Handlers: %s" % cmd_groups)
 
         tickets = {}
         for cmd, tkts in cmd_groups:

@@ -1,9 +1,8 @@
-I have officially taken this project over, so all forks of this project should happen here not upstream.
+This fork add support for multiple repository (Trac 0.12).
+It will forward code browsing url to github only for git repositories
 
-======================================================================================================
-
-Please file bug reports here:
-http://davglass.lighthouseapp.com/projects/21212/home
+All your trac local git directory must be under the same root dir
+The name of your trac git repository must match the name of your repository in github.
 
 ======================================================================================================
 
@@ -35,7 +34,9 @@ To install this Trac Plugin:
         apitoken = YOUR GITHUB API TOKEN
         closestatus = closed (This is optional, defaults to closed
         browser = http://github.com/davglass/tree/master
-
+    	#This is the path where all your git repo are don't forget the ending /
+    	
+    	gitreposdir = /var/git/
         #Optional - perform a fetch on the local git repository
         autofetch = true
         
@@ -43,7 +44,7 @@ To install this Trac Plugin:
         Under the: Post-Receive URLs
         Place a link to your Trac repository, in a format like this:
         
-        http://yourdomian.com/projects/projectname/github/APITOKEN
+        http://yourdomian.com/trac/github/APITOKEN
 
         You can get your GitHub API token from your accounts page.
         This is for your security, only those that know the API Token will able to post to this url

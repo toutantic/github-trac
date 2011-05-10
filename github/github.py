@@ -1,9 +1,10 @@
 from trac.core import *
 from trac.config import Option, IntOption, ListOption, BoolOption
-from trac.web.api import IRequestFilter, IRequestHandler, Href
+from trac.web.api import IRequestFilter, IRequestHandler, Href, RequestDone
 from trac.util.translation import _
 from hook import CommitHook
 
+import re
 import simplejson
 
 from git import Git
@@ -17,6 +18,7 @@ class GithubPlugin(Component):
     browser = Option('github', 'browser', '', doc="""Place your GitHub Source Browser URL here to have the /browser entry point redirect to GitHub.""")
     autofetch = Option('github', 'autofetch', '', doc="""Should we auto fetch the repo when we get a commit hook from GitHub.""")
     repo = Option('trac', 'repository_dir' '', doc="""This is your repository dir""")
+    gitreposdir = Option('github', 'gitreposdir' '', doc="""This is the path where all your git repo are""")
 
     def __init__(self):
         self.hook = CommitHook(self.env)
@@ -41,6 +43,11 @@ class GithubPlugin(Component):
     def process_request(self, req):
         if self.processHook:
             self.processCommitHook(req)
+        
+        req.send_response(204)
+        req.send_header('Content-Length', 0)
+        req.write('')
+        raise RequestDone
 
     # This has to be done via the pre_process_request handler
     # Seems that the /browser request doesn't get routed to match_request :(
@@ -101,22 +108,33 @@ class GithubPlugin(Component):
         status = self.closestatus
         if not status:
             status = 'closed'
-
+	
         data = req.args.get('payload')
-         
-        if data:
-            jsondata = simplejson.loads(data)
-
-            for i in jsondata['commits']:
-                self.hook.process(i, status)
-
+	jsondata = simplejson.loads(data)
+		
+	repoName = jsondata['repository']['name']
 
         if self.autofetch:
-            repo = Git(self.repo)
+	    if data:
+	    	jsondata = simplejson.loads(data)
+		self.env.log.debug(jsondata['repository']['name']);
+	        repo = Git(self.gitreposdir+repoName+"/.git")
 
             try:
+              self.env.log.debug("Fetching repo %s" % self.repo)
               repo.execute(['git', 'fetch'])
+              try:
+                self.env.log.debug("Resyncing local repo")
+                self.env.get_repository(repoName).sync()
+              except:
+                self.env.log.error("git sync failed!")
             except:
-              self.env.log.debug("git fetch failed!")
+              self.env.log.error("git fetch failed!")
 
+        jsondata = simplejson.loads(data)
 
+         
+        if jsondata:
+            if jsondata['ref'] == "refs/heads/master" or re.search('-stable$', jsondata['ref']):
+                for i in jsondata['commits']:
+                    self.hook.process(i, status)

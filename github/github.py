@@ -15,7 +15,7 @@ class GithubPlugin(Component):
     
     key = Option('github', 'apitoken', '', doc="""Your GitHub API Token found here: https://github.com/account, """)
     closestatus = Option('github', 'closestatus', '', doc="""This is the status used to close a ticket. It defaults to closed.""")
-    browser = Option('github', 'browser', '', doc="""Place your GitHub Source Browser URL here to have the /browser entry point redirect to GitHub.""")
+    username = Option('github', 'username', '', doc="""your github user or organisation name""")
     autofetch = Option('github', 'autofetch', '', doc="""Should we auto fetch the repo when we get a commit hook from GitHub.""")
     repo = Option('trac', 'repository_dir' '', doc="""This is your repository dir""")
     gitreposdir = Option('github', 'gitreposdir' '', doc="""This is the path where all your git repo are""")
@@ -23,7 +23,7 @@ class GithubPlugin(Component):
     def __init__(self):
         self.hook = CommitHook(self.env)
         self.env.log.debug("API Token: %s" % self.key)
-        self.env.log.debug("Browser: %s" % self.browser)
+        self.env.log.debug("Username: %s" % self.username)
         self.processHook = False
 
     
@@ -52,16 +52,30 @@ class GithubPlugin(Component):
     # This has to be done via the pre_process_request handler
     # Seems that the /browser request doesn't get routed to match_request :(
     def pre_process_request(self, req, handler):
-        if self.browser:
-            serve = req.path_info.startswith('/browser')
-            self.env.log.debug("Handle Pre-Request /browser: %s" % serve)
-            if serve:
-                self.processBrowserURL(req)
+	if not self.username:
+		return handler
 
-            serve2 = req.path_info.startswith('/changeset')
-            self.env.log.debug("Handle Pre-Request /changeset: %s" % serve2)
-            if serve2:
-                self.processChangesetURL(req)
+	isBrowser = req.path_info.startswith('/browser/')
+	if isBrowser: 
+		uri = req.path_info.split('/');
+		projectName = uri[2]
+		repoType = "%s" % self.env.get_repository(projectName)
+		isGitRepo = False
+		if repoType.find('Git') != -1:
+			isGitRepo = True
+		self.env.log.debug("Handle Pre-Request /browser: %s" % isGitRepo)
+		if isGitRepo:
+			self.processBrowserURL(req, projectName)
+
+	isChangeset = req.path_info.startswith('/changeset')
+	self.env.log.debug("REQUEST %s" % req.path_info)
+	if isChangeset:	    
+		info = req.path_info.split('/');
+		rev=info[2]
+		projectName=info[3]
+		self.env.log.debug("Handle Pre-Request /changeset: %s" % info)
+		if not rev.isdigit(): # digit = svn, not digit = sha1 = git
+			self.processChangesetURL(req, projectName, rev)
 
         return handler
 
@@ -70,37 +84,33 @@ class GithubPlugin(Component):
         return (template, data, content_type)
 
 
-    def processChangesetURL(self, req):
+    def processChangesetURL(self, req, projectName, rev):
         self.env.log.debug("processChangesetURL")
-        browser = self.browser.replace('/tree/master', '/commit/')
         
         url = req.path_info.replace('/changeset/', '')
         if not url:
-            browser = self.browser
             url = ''
 
-        redirect = '%s%s' % (browser, url)
+        redirect = 'https://github.com/%s/%s/commit/%s' % (self.username, projectName, rev)
         self.env.log.debug("Redirect URL: %s" % redirect)
         out = 'Going to GitHub: %s' % redirect
 
         req.redirect(redirect)
 
 
-    def processBrowserURL(self, req):
+    def processBrowserURL(self, req, projectName):
         self.env.log.debug("processBrowserURL")
-        browser = self.browser.replace('/master', '/')
         rev = req.args.get('rev')
-        
+        self.env.log.debug("rev %s" % rev)
         url = req.path_info.replace('/browser', '')
         if not rev:
             rev = ''
-
-        redirect = '%s%s%s' % (browser, rev, url)
+        self.env.log.debug("url %s" % url)
+        redirect = 'https://github.com/%s/%s' % (self.username, projectName)
         self.env.log.debug("Redirect URL: %s" % redirect)
         out = 'Going to GitHub: %s' % redirect
 
         req.redirect(redirect)
-
         
 
     def processCommitHook(self, req):

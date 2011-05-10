@@ -33,9 +33,10 @@ To install this Trac Plugin:
         [github]
         apitoken = YOUR GITHUB API TOKEN
         closestatus = closed (This is optional, defaults to closed
+        username = your github user or organisation name
+        
         browser = http://github.com/davglass/tree/master
     	#This is the path where all your git repo are don't forget the ending /
-    	
     	gitreposdir = /var/git/
         #Optional - perform a fetch on the local git repository
         autofetch = true
